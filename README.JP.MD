@@ -12,8 +12,19 @@ CodeQLラーニングカタログは、CodeQLを学習していただくため�
 
 次の２つの環境でご利用いただけます。
 - Codespaces
-  <img src="public/assets/images/CodeQL-learning-Catalgo-CodeSpacesConf.png">
 - ローカルPC
+
+##  Codespaces
+  Codespace環境設定と生成の手順を以下に説明します
+  1. ブランチ<ワークショップタイトル>-<レベル>を作成（例：`qlc-100`)
+  2. Code->Codespaces->+ New with option
+  <img src="public/assets/images/codespaces-1.png">
+  3. Create codespaceのウィンドウが表示されるので、各項目について選択
+  Branchは、１で作成したブランチ名を指定(`qlc-100`)、Dev container configurationには、`CodeQL Learning Catalog(Authors)`、Machine Typeは`8-core`推奨
+  <img src="public/assets/images/codespaces-2.png">
+  4. 設定が完了したら、`Create codespace`ボタン押下
+
+## ローカルPC
   git cloneコマンドで、本リポジトリをローカルにクローン
 
 ## ディレクトリ構成  
