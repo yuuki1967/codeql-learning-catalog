@@ -5,22 +5,22 @@ octicon: package
 toc: false
 ---
 
-Before we start we are going to spend some time to setup the development environment because that is essential for you to participate in the workshop.
-
-The development environment will consist of:
+本ワークショップを始めるにあたって、開発環境の設定をして頂きます。
+開発環境として、次のツールが必要です。
 
 - [Visual Studio Code](https://code.visualstudio.com/)
-- The [CodeQL](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-codeql) extension
-- The [CodeQL CLI](https://github.com/github/codeql-cli-binaries/releases/latest)
+- [CodeQL](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-codeql) extension
+- [CodeQL CLI](https://github.com/github/codeql-cli-binaries/releases/latest)
 
-Follow the next steps to set up your environment. Feel free to reach out for support if things aren't going as planned.
+次のステップで、環境を設定します。
 
-1. Ensure you have the latest Visual Studio Code installed by downloading it from the [download page](https://code.visualstudio.com/Download) for your operating system and install it by following the [setup](https://code.visualstudio.com/docs/setup/setup-overview) instructions.
-2. Install the CodeQL extension from the [Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-marketplace).
+1. [download page](https://code.visualstudio.com/Download)から、OSにあった最新のVisual Studio Codeをダウンロードします。設定手順は [setup](https://code.visualstudio.com/docs/setup/setup-overview)を参照ください。 
 
-The CodeQL extension automatically installs and updates the CodeQL CLI. However, the extension managed CLI is inconvienient to use directly in a Visual Studio Code terminal or other terminal available on your system due to the isolation mechanisms applied to Visual Studio Code extensions. We want to directly use the CodeQL CLI for the tasks that haven't been made available through the CodeQL extension, such as create QL packs and building databases. No worries if that doesn't ring a bell yet. These topics will be discussed in this workshop.
+2. CodeQL extensionを[Extension Marketplace](https://code.visualstudio.com/docs/editor/extension-marketplace)からインストールします。
 
-To install the CodeQL CLI and configure the Visual Studio Code extension use the following steps. We have split up the instructions for those that have the [GitHub CLI](https://cli.github.com/) installed and [authenticated](https://cli.github.com/manual/gh_auth_login) and for those who don't.
+CodeQL extensionは、CodeQL CLIを自動でインストールと更新を行います。ただし、extensionでインストールされたCLIは、Visual Studio Codeのターミナル、もしくはbash, Powershell等のターミナルから使えないので、CodeQL packを作成したり、Databaseを作成する場合には、CodeQL CLIを別途インストールする必要があります。
+
+CodeQL CLIのインストール、Visual Studio Code extensionの設定を次のステップで行います。インストレーション手順は [GitHub CLI](https://cli.github.com/)、または [authenticated](https://cli.github.com/manual/gh_auth_login)を参照ください。
 
 1. Install the CodeQL CLI with the GitHub CLI (GH)
 
