@@ -5,48 +5,45 @@ octicon: package
 toc: false
 ---
 
-Our first query didn't provide a lot of information around the structure of a QL query besides the use of the `select` keyword.
+最初のクエリは、最もシンプルなスクリプト、`select`文以外は利用していないものでした。
 
-A typical query contains the following elements:
+ここで典型的なクエリをご紹介します。:
 
-- Query metadata.
-- Import statements
-- Definitions of classes and predicates
-- The `from`, `where`, and `select` clause.
+- Query metadata(クエリメタデータ)
+- Import statements(Import宣言)
+- classesとpredicates定義
+- `from`, `where`, `select`文節 
 
-Let start exploring these components from the bottom up.
+上記で示したコンポーネントの最後から説明していきます。
 
-1. The `select` clause
+1. `select`文節 
 
-    For those familiar with query languages such as SQL the syntax of the `select` clause, consisting of the two optional `from` and `where` parts and the mandatory `select` part, should look familiar.
-
-    ```ql
+    QL言語は、SQLの文法に似た言語で、`select`の記載は必須で、オプションとして、`from`と`where`で構成されています。
+    ```
     from ...
     where ...
     select ...
     ```
 
-    The `from` part can be used to declare variables. Each variable represents a set of values of the same sort described by the variable's type. Because sets of values can overlap (that is, their intersection is not empty) it can be the case that values have multiple types.
+    `from`では、変数の定義する際に先頭に置き、その後に変数を宣言していきます。それぞれの変数は、型宣言の後に変数を並べていきます。複数の型とそれに伴う変数をここで宣言します。
 
-    <details><summary>Can you think of an example of a value in a program that would be described by multiple types?</summary>
+    <details><summary>プログラムの中で、複数の型で記述される値を想像してみましょう</summary>
 
-    For example, a type representing all the expressions in a program and a type representing all the arithmetic expressions in a program.
+    例えば、プログラムの中で、すべての数字の表現、数式表現を考えてみてください。
 
     </details>
 
-    The following examples describe types and the values they represent.
+    次の例は、型とその値の例となります。
+    - 32bitの２の補数の整数の値は、`int`型 
+    - 有限の連続した16bitの文字列、ぞれぞれの文字はUnicodeの場合、`string`型 
+    - データベースをクエリする際のclass `Expr`
 
-    - The primitive type `int` with each value being a 32-bit two's complement integer.
-    - The primitive type `string` with each value being a finite sequence of 16-bit characters, each interpreted as a Unicode code point.
-    - The class `Expr` with each value being an expression in a program (part of the database being queried).
+    本ワークショップの最後の例として、*type*の代わりに*class*を使う例があります。QLの中で、*class*定義で、*type*を定義できます。
+    `where`文の中で、抽出した変数の値をさらに絞り込むことができます。
 
-    Note that in the last example we used the term *class* instead of *type*. In QL you can define your own *type* by defining a *class*.
+    QLは、*logic programing language* で公式を構築していきます。`where`文の中で、`<epxr> <op> <expr>`のような形式、表現をすることで、論理的なリレーションを定義します。（SQLのwhere句に似ています）
 
-    To reason about the variables and their values we can further restrict the values of the variables in the `where` part.
-
-    QL is a *logic programming language* and is built up of logical formulas. In the `where` part we can use formulas to define logical relations between expressions and are of the form `<expr> <op> <expr>`. Wait, didn't we discussed variables instead of expressions?
-
-    [Expressions](https://codeql.github.com/docs/ql-language-reference/expressions/) evaluate to a set of values.
+    表現(Expressions)については、[Expressions](https://codeql.github.com/docs/ql-language-reference/expressions/) に詳細があります。 
 
     <details><summary>What determines the set of values?</summary>
 
@@ -54,48 +51,48 @@ Let start exploring these components from the bottom up.
 
     </details>
 
-    During query writing we will get introduced to the many kinds of expressions. For now we will continue with variables. In a formula a variable can be referenced using a *[variable reference](https://codeql.github.com/docs/ql-language-reference/expressions/#variable-references)*.
+    クエリを記述している中で、多くの表現(Expression)のしかたをご紹介します。変数の使い方については、*[variable reference](https://codeql.github.com/docs/ql-language-reference/expressions/#variable-references)*に詳細な説明がありますので、そちらもご参照ください。
 
-    Finally, we have the [select clause](https://codeql.github.com/docs/ql-language-reference/queries/#select-clauses) that determines what we want to *select* as a result for the query. The result of a query will be a set of ordered tuples commonly represented as a table with columns and rows. The columns are determined by the expression provided to the `select` clause. The provided *expressions* **must** evaluate to a value part of a *primitive type*. We will discuss what *primitive types* later on in this workshop. Classes have a *member predicate* `toString` that is used to convert them to a `string`.
+    最後に、クエリの結果を得る場合には、*select*を使います。[select clause](https://codeql.github.com/docs/ql-language-reference/queries/#select-clauses)も合わせてご参照ください。クエリの結果は、カラムとローのテーブルとして共通に表現される配列の形式になります。カラムは、`select`に提供する表現によって決定することができます。*表現形式*は、**必ず** *primitive type*の値で評価する必要があります。このワークショップの後の説明で、*primitive type*についての説明があります。*class*は、`string(文字列)`変換する *member predicate* `toString`を用意しています。
 
-    The `as` keyword can be used to label to a column of results and allows the result to be referenced in other expressions part of the select clause. The `order by` keyword allows you to sort the result set. To control the ordering you can use the keywords `asc`, for ascending, and `desc` for descending.
+    `as`キーワードは、カラムの結果にラベルとして利用できます。そして、`select`の他の表現の中で参照できるようにしています。`order by`キーワードは、結果を並べる機能を提供します。`asc`キーワードは、結果を昇順、`desc`は結果を降順に並べ替えます。
 
-    Let's have a look at some concrete examples!
+    次にいくつか具体例を示します。
+    1. 次のコンテンツを使って、`qlc-100/problems`CodeQL packに、`FromWhereSelect.ql'クエリを追加します。
 
-    1. Add the query `FromWhereSelect.ql` to the CodeQL pack `qlc-100/problems` with the following contents
-
-        ```ql file=./src/solutions/FromWhereSelect.ql
+        ```
+        ql file=./src/solutions/FromWhereSelect.ql
         ```
 
-    2. Add a directory `FromWhereSelect` with the files `FromWhereSelect.qlref` and `FromWhereSelect.expected` to the CodeQL pack `qlc-100-tests/problems`. Make sure to add the path `FromWhereSelect.ql`, the path to the query relative to the CodeQL pack it belongs to, in the `FromWhereSelect.qlref` file.
+    2. `tests/problems/FromWhereSelect`ディレクトリを作成して、`tests/solutions/FromWhereSelect.qlref`、`tests/solutions/FromWhereSelect.expected`を`tests/problems/FromWhereSelect`ディレクトリへ追加します。その際に、`FromWhereSelect.qlref`の中に、相対パス指定で、`FromWhereSelect.ql`が追加されていることをご確認ください。
 
-    3. Run the newly created QL test.
+    3. `codeql test run`で作成したテストを実行します
 
-    The test will fail and output the following result.
+    テストはfailします。
 
-    ```diff file=./tests/solutions/FromWhereSelect.expected
+    ```
+    diff file=./tests/solutions/FromWhereSelect.expected
     ```
 
-    <details><summary>Why did the test fail?</summary>
+    <details><summary>failの理由を考えます</summary>
 
-    The output of the query didn't match our test's expected file.
+    クエリ結果が、`FromWhereSelect.expected`の中に埋め込まれた値と整合性が取れなかったためです。
 
     </details>
 
-    For each test that fails, the CodeQL extension keeps the database so we can investigate why the test failed. In the directory `FromWhereSelect` there should be an additional directory named `FromWhereSelect.testproj`. You can mount the test database with the command `CodeQL: Set Current Database` that is available in the context menu when you right click on the directory `FromWhereSelect.testproj` in the Visual Studio Code file explorer.
+    各々のfailしたテストについて、CodeQL extensionはデータベースを保持します。それにより、failした理由を調査することができます。`FromWhereSelect`ディレクトリの中で、`FromWhereSelect.testproj`ファイルが生成されます。`CodeQL: Set Current Database`コマンドで、そのテストデータベースをVisual Studio Code上でマウントすることができます。Visual Studio Codeから、`FromWhereSelect.testproj`を右クリックして `CodeQL: Set Current Database`を選択します。
 
     ![img](/assets/images/QLC/100/mount-testproj.png "Select the failed test database as the current database.")
 
-    To investigate a failed test you can make use of the `CodeQL: Quick query` functionality. This allows you to quickly create a one-off query for a mounted database.
+    failしたテストを調査するために、`CodeQL: Quick query`機能を使います。この機能は、マウントしてデータベースで、1回限りのクエリを即座に生成します。
 
-    To test this, perform the following steps:
+    これをテストするための、手順を以下に示します。
+    1. `FromWhereSelect.testproj`データベースをマウントします
+    2. Visual Studio Codeのコマンドパレットから、`CodeQL: Quick Query`を選択します。
 
-    1. Mount the `FromWhereSelect.testproj` database.
-    2. Execute the command `CodeQL: Quick Query` using the Visual Studio Code [Command Palette](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette). Answer with Yes when prompted to reload the workspace as a multi-folder workspace, and yes when prompted to trust the workspace.
+    Visual Studio Code Explorerの中で、新しいディレクトリ`Quick Queries`とその配下に`quick-query.ql`ファイルが作成されます。ファイルは次のようなimport と select文で構成されたものになります。
 
-    In the Visual Studio Code Explorer you can now find a new folder named `Quick Queries` with, among others, a file `quick-query.ql` with the contents
-
-    ```ql
+    ```
     import cpp
 
     select ""
@@ -103,33 +100,33 @@ Let start exploring these components from the bottom up.
 
     ![img](/assets/images/QLC/100/quick-query-folder.png "Quick query folder added to the workspace")
 
-    The contents of the `quick-query.ql` file has been setup to match the language of your selected database. The language can also be seen in the database section of the CodeQL extension.
+    `quick-query.ql`ファイルは、選択したデータベースの言語にマッチしたスケルトンを作成します。ここにデバッグ用のスクリプトを入れます。
 
     ![img](/assets/images/QLC/100/codeql-databases-section.png "CodeQL extension databases section")
 
-    The query can be executed using the command `CodeQL: Run Query` via the Command Palette or the right-click menu.
+    作成したスクリプトを実行するために、コマンドパレット、もしくは、当該ファイル上右クリックで、`CodeQL: Run Query`を選択します。
 
-    Once you have established why the test cased failed, and corrected your query you can re-run the test. If you start with an empty `FromWhereSelect.expected` file you can accept the test output via the right-click menu that is available on the test or run the CodeQL CLI command `codeql test accept tests/problems/FromWhereSelect/FromWhereSelect.qlref`.
+    failした理由が判明したら、再度実行しながら、修正します。空の`FromWhereSelect.expected`でテストを実行し、その後、`codeql test accept tests/problems/FromWhereSelect/FromWhereSelect.qlref`を実行することで、`FromWhereSelect.expected`の中に、評価対象データを持つことできます。
 
     ![img](/assets/images/QLC/100/accept-test-output.png "Accept test output")
 
 2. Imports
 
-    QL supports [modules](https://codeql.github.com/docs/ql-language-reference/modules/#modules) to organize and reuse QL code. Each query file, with the extension `.ql`, and library file, with the extension `.qll`, *implicitly* defines a module. The `import` statement can be used to import public names (i..e, not annotated [private](https://codeql.github.com/docs/ql-language-reference/annotations/#private)), of a library module, into the namespace of the current module containing the `import` statement.
+    QLは、QLコードを管理し、再利用するために[modules](https://codeql.github.com/docs/ql-language-reference/modules/#modules)機能があります。 拡張子`.ql`ファイル、拡張子`.qll`のライブラリファイルは、*暗黙的に*モジュールを定義します。`import`宣言は、名前空間に、ライブラリモジュールの公開された名前(i..e, not annotated [private](https://codeql.github.com/docs/ql-language-reference/annotations/#private))をインポートするために利用する宣言です。 
 
-    By convention the first statement in a query module is the import of the language library you are targeting. For example, `import cpp`.
+    規約によって、クエリモジュールの最初の宣言は、`import`を使って言語をインポートすることです。例えば、C/C++の場合、`import cpp`と記述します。
 
-    Modules will not be further discussed in this quick-start.
+    モジュールについては、本ワークショップ(QLC)の中では、これ以上は触れません。
 
-3. Query metadata
+3. Query metadata(クエリメタデータ)
 
-    A query has properties that provide information to users of a query and provides information to consumer of the query result on how to display its results. These properties are known as query metadata.
+    クエリは、結果を表示する際のユーザへ提供する情報を持ちます。これらのプロパティをクエリメタデータと呼んでいます。
 
-    The query metadata resides at the top in a query file as a [QLDoc comment](https://codeql.github.com/docs/ql-language-reference/ql-language-specification/#qldoc-qldoc). A QLDoc comment starts with a `/**`, ends with a `*/`, and can span multiple lines. The body of QLDoc, the *contents*, is compromised of all the text surrounded by~/\*\*~ and `*/`. For each line the leading whitespace followed by a `*` is ignored and excluded from the content. The [contents](https://codeql.github.com/docs/ql-language-reference/ql-language-specification/#content) is interpreted as [CommonMark](https://commonmark.org/). The properties of a query are specified as tags. A tag is started with a `@` sign followed by any number of non-whitespace characters to form the *key* of the tag. A single whitespace character separates the key from the value, with the value being the remainder of the line.
+    クエリメタデータはクエリファイルの先頭に配置します。詳細は、[QLDoc comment](https://codeql.github.com/docs/ql-language-reference/ql-language-specification/#qldoc-qldoc)を参照ください。QLDocコメントは、`/**`で始め、`*/`で終わるよう記述します。そして複数の行にまたがって記述できます。 QLDocの本体である*contents*は、~/\*\*~と`*/`で囲まれたテキストで記述される。それぞれの行は、`*`に従うスペースで始まります。contents(コンテンツ)とは分離されています。[contents](https://codeql.github.com/docs/ql-language-reference/ql-language-specification/#content)[CommonMark](https://commonmark.org/)で翻訳されます。クエリのプロパティは、tagsとして指定します。 tagは `@`で始まります。 どの後に、空白なしの文字列が*key*を形成します。1つの空白が、keyとvalueを分離します。
 
-    The supported properties of a query can be found [here.](https://codeql.github.com/docs/writing-codeql-queries/metadata-for-codeql-queries/#metadata-properties) The next snippet shows the metadata for a standard library query.
+    サポートするプロパティは、[here.](https://codeql.github.com/docs/writing-codeql-queries/metadata-for-codeql-queries/#metadata-properties) に記載があります。以下の抜粋は、標準ライブラリクエリのメタデータです。
 
-    ```ql
+    ```
     /**
     * @name Uncontrolled data used in OS command
     * @description Using user-supplied data in an OS command, without
@@ -146,22 +143,23 @@ Let start exploring these components from the bottom up.
     */
     ```
 
-    Here are a few takeaways for query metadata when consuming the results in GitHub Code Scanning:
+    GitHub Code Scanningの結果を利用する際の重要な情報をいくつか紹介します。
 
-    - A `@name` property is **required** and defines a display name for the query. The [metadata style guide](https://github.com/github/codeql/blob/master/docs/query-metadata-style-guide.md#query-name-name) prescribes you should use sentence capitalization without a full stop.
-    - A `@description` property is **required** and defines a short help message. The [meta data style guide](https://github.com/github/codeql/blob/main/docs/query-metadata-style-guide.md#query-descriptions-description) prescribes you should be written as a sentence or a short paragraph with sentence capitalization and a full stop.
-    - A `@id` property is **required**. The id must uniquely identify a query and *should* follow the CodeQL convention by starting the id with a *language code* followed by a `/`. The remainder of the id should consists of a short noun phrase. For example, `cpp/command-line-injection`. Additional terms can be added to group queries. For example, `js/angular-js/missing-explicit-injection` and `js/angular-js/dpulicate-dependency`. **Note: Code Scanning uses the id to track alerts, changing the id will result in alerts tracked with the old id being closed and new alerts with the new id being introduced.**
-    - A `@kind` property is **required**. There are multiple query types, but the most common alert kinds are: `problem` and `path-problem`. The kind property determines how to display the result of a query and expects a specific `select` form described in [Defining the results of a query](https://codeql.github.com/docs/writing-codeql-queries/defining-the-results-of-a-query/) and [Creating path queries](https://codeql.github.com/docs/writing-codeql-queries/creating-path-queries/#creating-path-queries).
-    - A `@precision` property is *optional* for alert queries and indicates the proportion of true positives expected for the query. Possible values are:
-        - `low`, expect a lot of false positives
-        - `medium`, expect a moderate number of false positives
-        - `high`, expect a low number of false positives
-        - `very-high`, expect false positives in exceptional cases
-    - A `@problem.severity` property is *optional* for alert queries and indicates the severity for alerts. Possible values are:
-        - `error`, an issue that likely results in incorrect program behavior such as a crash or vulnerability
-        - `warning`, an issue indicating a potential problem and could become a problem due to changes in the code.
-        - `recommendation`, an issue that indicates code behaves correctly, but could be improved.
-    - A `@tags` property is *optional*. Tags can be used to group queries into categories for identification purposes. The common tags are: `correctness`, `maintainabilility`, `readability`, `security`. Other known uses cases are to tag a query with a known weakness classification such as a [CWE](https://cwe.mitre.org/) or [OWASP Top 10](https://owasp.org/Top10/). Our standard queries, for example, use a CWE tag like `external/cwe/cwe-119`.
+    - `@name` 属性(プロパティ)は **必須(required)** クエリの表示する名前を定義します。[metadata style guide](https://github.com/github/codeql/blob/master/docs/query-metadata-style-guide.md#query-name-name)は、ピリオドなしの、大文字のセンテンスを使うよう指示しています。
+    - `@description` 属性は **必須required**で、簡潔なヘルプメッセージを記述します。[meta data style guide](https://github.com/github/codeql/blob/main/docs/query-metadata-style-guide.md#query-descriptions-description) は、ピリオドで完結する、大文字のセンテンスを使って、完結な文章での記述を指示しています。
+    - `@id` 属性は、 **必須required**項目で、クエリを一意に認識できるように設定する必要があります。*launguage code*で始まり、`/`がその後に記述する、CodeQLの規約に従う*必要*があります。そのあとは、短い名詞で構成すべきです。例えば、`cpp/command-line-injection` さらに、言葉はグループクエリに追加することが可能です。例えば、`js/angular-js/missing-explicit-injection`と`js/angular-js/dpulicate-dependency`
+     **Note: Code Scanningは、alertsの追跡にidを利用します。idの変更は、クローズした過去のidのalertとなったり、逆に新しいidが間違って、alertとして登録されてしまう危険があります。**
+    - `@kind` 属性は、 **必須required**項目で、複数のクエリタイプがありますが、ほとんど、`problem`か`path-problem`になります。kind属性は、クエリの結果をどう表示するのかを決定します。そして、特定の`select`形式を想定しています。[Defining the results of a query](https://codeql.github.com/docs/writing-codeql-queries/defining-the-results-of-a-query/) と [Creating path queries](https://codeql.github.com/docs/writing-codeql-queries/creating-path-queries/#creating-path-queries)に記載があります。
+    - `@precision` 属性は、クエリをアラートするために指定します。*optional*です。 予想(期待)される正しい検出の度合いを示す:
+        - `low`, 多くの誤検知の可能性。
+        - `medium`, 誤検知の比率はある程度あり。
+        - `high`, 誤検知は低いこと。
+        - `very-high`, 誤検知はほぼないことを期待。
+    - `@problem.severity` 属性は、*optional*で、 クエリのアラートに関する重症度を示す。:
+        - `error`, クラッシュ、もしくは、脆弱性のような、不適切なプログラムの振る舞いになる
+        - `warning`, 問題を起こす可能性
+        - `recommendation`, コードが適切に動作するが、改善を期待
+    - `@tags` 属性は、*optional*で、 クエリをカテゴリ別グルーピングするために利用する。共通のタグとして: `correctness`, `maintainabilility`, `readability`, `security`。  その他の利用ケースとして、[CWE](https://cwe.mitre.org/) や[OWASP Top 10](https://owasp.org/Top10/)で分類される脆弱性の分類で利用する。 例えば、`external/cwe/cwe-119`のようなCWEでの分類。
         - An additional `@security-severity` property is available for queries with `security` tag. This defines a severity with the range `0.0` - `10.0`. The blog [CodeQL code scanning: new severity levels for security alerts](https://github.blog/changelog/2021-07-19-codeql-code-scanning-new-severity-levels-for-security-alerts/) describes how to compute a severity.
 
     The query properties can be used to filter which queries are part of a [CodeQL query suite](https://codeql.github.com/docs/codeql-cli/creating-codeql-query-suites/#filtering-the-queries-in-a-query-suite). This won't be discussed in this quick-start.
