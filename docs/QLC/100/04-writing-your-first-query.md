@@ -5,49 +5,51 @@ octicon: package
 toc: false
 ---
 
-Now that we have created our query and test CodeQL packs we can finally start with our first query!
+クエリとテストCodeQL packを作成したので、ついに最初のクエリの作成に入ります。
 
-Create the file `HelloWorld.ql` in the `qlc-100/problems` CodeQL pack with the following content:
+`qlc-100/problems` CodeQL packの中に`HelloWorld.ql` ファイルを作成します:
 
-```c file=./src/solutions/HelloWorld.ql
+```
+c file=./src/solutions/HelloWorld.ql
 ```
 
-That is it for our first query. To determine if it works as intended we want to test it so we should add a unit test to our `qlc-100-tests/problems` CodeQL pack.
+最初のクエリになります。このクエリに対して、単体テストを実施するために、`qlc-100-tests/problems` CodeQL packに次のように追加します
 
-1. Create a folder `HelloWorld` in the `qlc-100-tests/problems` directory.
-2. Add the file `HelloWorld.qlref` in the just created directory `HelloWorld` with the contents:
+1.`qlc-100-tests/problems`ディレクトリに`HelloWorld`サブディレクトリを作成する
+2. `HelloWorld`ディレクトリに、`HelloWorld.qlref`を作成して、以下の内容を入れる:
 
-    ```c file=./tests/solutions/HelloWorld.qlref
+    ```
+    c file=./tests/solutions/HelloWorld.qlref
     ```
 
-3. Add the file `HelloWorld.expected` in the just created directory `HelloWorld` with the contents:
+3. `HelloWorld`ディレクトリに`HelloWorld.expected`を作成して、以下の内容を入れる:
 
-    ```c file=./tests/solutions/HelloWorld.expected
+    ```
+    c file=./tests/solutions/HelloWorld.expected
     ```
 
-The `HelloWorld.qlref` is a query reference file that references to a query to be tested. It is a path relative to a CodeQL pack.
+`HelloWorld.qlref`は、テストする参照クエリを指定します。CodeQL packへの相対パスで指定します。
 
 <details><summary>How does CodeQL know which CodeQL pack?</summary>
 
-CodeQL will go through the dependencies to determine which CodeQL pack contains the query.
+CodeQLは、どのCodeQL packがクエリを含むのか決定するために依存関係を検索します。
 
 </details>
 
-Instead of a query reference file you can also specify a query file directly. However, it is common to separate them into their own CodeQL packs so they can be independently be published and deployed.
+クエリ参照の代わりに、直接クエリファイルの指定も可能です。しかし、CodeQL packは、他のCodeQL packと独立してインストールできるので、通常は分離します。
 
-The `HelloWorld.expected` file contains the expected output when running the query on a database built from files residing in the `HelloWorld` directory. In our case we have none, so the database will be empty.
+`HelloWorld.expected` は、データベースをクエリしたときの期待する結果をあらかじめ入れます。 このデータベースは、`HelloWorld`ディレクトリにあるファイルから構築されたものです。このワークショップにおいては、対象ファイルがないため、データベースは空です。
 
-With the qlpack specification for the test we can run the test using the [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) extension that is installed as a dependency of the CodeQL extension.
+テストで使用するqlpackの仕様では、 CodeQL extensionの依存性を持った[Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) を使ってテストを実行します。
 
 ![img](/assets/images/QLC/100/test-explorer-ui-extension.png "The HelloWorld test listed in the Test Explorer UI")
 
-We can run the test from the Test Explorer UI or run the test from the terminal with the command:
+Test Explorer UI、もしくはターミナルからテストできます。
 
 ```bash
 codeql test run tests/problems/HelloWorld
 ```
-
-Either way, running the test will result in the error:
+いずれにしても、テストエオ実行すると、次のようなエラーになります。
 
 ```bash
 Error: Could not locate a dbscheme to compile against.
@@ -55,9 +57,9 @@ You probably need to specify a libraryPathDependencies list in
 /.../src/qlpack.yml
 ```
 
-The test is unable to determine the database schema to our query in the `qlc-100/problems` CodeQL pack. Every CodeQL database adheres to a language specific database schema and every query should adhere to the same schema so it can correctly query the database. The database schema for queries (as supposed to the extractor creating the database) is located in the standard library `all` pack of the language we want to query.
+`qlc-100/problems` CodeQL packの中の作成したクエリへのデータベーススキーマをテストは定義することができません。それぞれのCodeQL データベースは、言語別データベーススキーマに完全にマッチしています。そして、それぞれのクエリは、適切なデータベースをクエリするために同じスキーマにマッチする必要があります。データベーススキーマは、正しくクエリするために、それぞれの言語の標準ライブラリ`all`に入っています。
 
-While we remain language agnostic with the queries discussed in this workshop, we still need to pick a language for the database schema. Adjust the `qlpack.yml` of the `qlc-100/problems` CodeQL pack to match the following content:
+言語ごとのデータベーススキーマを選択する必要があります。その方法は、`qlc-100/problems`の`qlpack.yml`を以下のように修正することです。
 
 ```yaml
 ---
