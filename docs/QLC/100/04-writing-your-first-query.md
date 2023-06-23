@@ -15,7 +15,7 @@ c file=./src/solutions/HelloWorld.ql
 
 最初のクエリになります。このクエリに対して、単体テストを実施するために、`qlc-100-tests/problems` CodeQL packに次のように追加します
 
-1.`qlc-100-tests/problems`ディレクトリに`HelloWorld`サブディレクトリを作成する
+1. `qlc-100-tests/problems`ディレクトリに`HelloWorld`サブディレクトリを作成する:
 2. `HelloWorld`ディレクトリに、`HelloWorld.qlref`を作成して、以下の内容を入れる:
 
     ```
@@ -70,7 +70,7 @@ dependencies:
   "codeql/cpp-all": "*"
 ```
 
-To ensure the dependency is available we need to run the command:
+依存関係を解決するためには、以下のコマンドを実行します。:
 
 ```bash
 ▶ codeql pack install qlc-100/problems
@@ -80,7 +80,7 @@ Package install location: /.../.codeql/packages
 Already installed codeql/cpp-all@0.4.3 (library)
 ```
 
-Through the `qlc-100/problems` CodeQL pack the `qlc-100-tests/problems` CodeQL pack has a dependency on `codeql/cpp-all` as well. So we need to resolve those dependencies by running the command:
+`qlc-100/problems`のCodeQL pack経由で、`qlc-100-test/problems` CodeQL packは、`codeql/cpp-all`の依存関係を持つ。そのため、以下のコマンド実行で、依存関係を解決します。:
 
 ```bash
 ▶ codeql pack install qlc-100-tests/problems
@@ -90,6 +90,5 @@ Package install location: /.../.codeql/packages
 Already installed codeql/cpp-all@0.4.3 (library)
 ```
 
-With all the dependencies resolved we can re-run the test. Try running both from Testing Explorer UI and using the CodeQL CLI.
-
-Congrats, you have written your first query!
+すべての依存関係を解決して、Testing Explorer UI、及びCodeQL CLIを実行します。
+エラーなく完了したら、最初のクエリ作成は終了です。
