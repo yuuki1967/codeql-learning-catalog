@@ -73,7 +73,7 @@ dependencies:
 依存関係を解決するためには、以下のコマンドを実行します。:
 
 ```bash
-▶ codeql pack install qlc-100/problems
+▶ codeql pack install src/problems
 Dependencies resolved. Installing packages...
 Install location: /.../.codeql/packages
 Package install location: /.../.codeql/packages
@@ -83,7 +83,7 @@ Already installed codeql/cpp-all@0.4.3 (library)
 `qlc-100/problems`のCodeQL pack経由で、`qlc-100-test/problems` CodeQL packは、`codeql/cpp-all`の依存関係を持つ。そのため、以下のコマンド実行で、依存関係を解決します。:
 
 ```bash
-▶ codeql pack install qlc-100-tests/problems
+▶ codeql pack install tests/problems/HelloWorld
 Dependencies resolved. Installing packages...
 Install location: /.../.codeql/packages
 Package install location: /.../.codeql/packages

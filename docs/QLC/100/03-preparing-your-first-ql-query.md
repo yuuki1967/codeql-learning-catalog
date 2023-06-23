@@ -74,8 +74,8 @@ multiple are defined in a project.
 
 ```yaml
 provide:
-  - "*/solutions/qlpack.yml"
-  - "*/problems/qlpack.yml"
+  - '*/solutions/qlpack.yml'
+  - '*/problems/qlpack.yml'
 ```
 修正したら、再度`codeql pack ls`を実行します。成功すると次のようなメッセージを見ることができます。
 
