@@ -53,7 +53,7 @@ toc: false
 
     クエリを記述している中で、多くの表現(Expression)のしかたをご紹介します。変数の使い方については、*[variable reference](https://codeql.github.com/docs/ql-language-reference/expressions/#variable-references)*に詳細な説明がありますので、そちらもご参照ください。
 
-    最後に、クエリの結果を得る場合には、*select*を使います。[select clause](https://codeql.github.com/docs/ql-language-reference/queries/#select-clauses)も合わせてご参照ください。クエリの結果は、カラムとローのテーブルとして共通に表現される配列の形式になります。カラムは、`select`に提供する表現によって決定することができます。*表現形式*は、**必ず** *primitive type*の値で評価する必要があります。このワークショップの後の説明で、*primitive type*についての説明があります。*class*は、`string(文字列)`変換する *member predicate* `toString`を用意しています。
+    最後に、クエリの結果を得る場合には、*select*を使います。[select clause](https://codeql.github.com/docs/ql-language-reference/queries/#select-clauses)も合わせてご参照ください。クエリの結果は、カラムとローのテーブルとして共通に表現される配列の形式になります。カラムは、`select`に提供する表現によって決定することができます。*表現形式*は、**必ず** *primitive type*の値で評価する必要があります。このワークショップの後の説明で、*primitive type*についての説明があります。*class*は、`string(文字列)`変換する *member predicate*である`toString`を用意しています。
 
     `as`キーワードは、カラムの結果にラベルとして利用できます。そして、`select`の他の表現の中で参照できるようにしています。`order by`キーワードは、結果を並べる機能を提供します。`asc`キーワードは、結果を昇順、`desc`は結果を降順に並べ替えます。
 
@@ -160,6 +160,6 @@ toc: false
         - `warning`, 問題を起こす可能性
         - `recommendation`, コードが適切に動作するが、改善を期待
     - `@tags` 属性は、*optional*で、 クエリをカテゴリ別グルーピングするために利用する。共通のタグとして: `correctness`, `maintainabilility`, `readability`, `security`。  その他の利用ケースとして、[CWE](https://cwe.mitre.org/) や[OWASP Top 10](https://owasp.org/Top10/)で分類される脆弱性の分類で利用する。 例えば、`external/cwe/cwe-119`のようなCWEでの分類。
-        - An additional `@security-severity` property is available for queries with `security` tag. This defines a severity with the range `0.0` - `10.0`. The blog [CodeQL code scanning: new severity levels for security alerts](https://github.blog/changelog/2021-07-19-codeql-code-scanning-new-severity-levels-for-security-alerts/) describes how to compute a severity.
+        - 追加の `@security-severity` 属性は、`security`タグとともに利用できる属性です。 重症度の範囲は、`0.0` - `10.0`の範囲で設定できます。合わせてブログ[CodeQL code scanning: new severity levels for security alerts](https://github.blog/changelog/2021-07-19-codeql-code-scanning-new-severity-levels-for-security-alerts/)の中で、重症度の計算方法について記述しています。
 
-    The query properties can be used to filter which queries are part of a [CodeQL query suite](https://codeql.github.com/docs/codeql-cli/creating-codeql-query-suites/#filtering-the-queries-in-a-query-suite). This won't be discussed in this quick-start.
+    クエリの属性は、どのクエリがクエリスイート[CodeQL query suite](https://codeql.github.com/docs/codeql-cli/creating-codeql-query-suites/#filtering-the-queries-in-a-query-suite)の一部なのかフィルタリングするために利用できます。QLCワークショップでは、議論の対象外となります。
