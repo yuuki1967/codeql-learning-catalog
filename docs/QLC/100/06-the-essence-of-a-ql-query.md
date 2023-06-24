@@ -5,56 +5,64 @@ octicon: package
 toc: false
 ---
 
-With a basic understanding of the structure of a query we can continue looking at the building blocks of queries, namely *types*, *expressions*, *formulas*, and *predicates*.
+クエリの基本構成をこれまで、学習してきました。引き続き、クエリの構成要素、*types*、*formulas*、*predicates*について見ていきます。
 
-In essence, a query is about relating types and their values. By solving a logic puzzle we are going to learn more about the building blocks and how they can be used.
+クエリの本質は、typesとvaluesの関係性です。論理パズルを解くことで、構成要素の学習と、どのように活用するのかを学習していきます。
 
 ### Predicates
 
-Let's start with a simple logic puzzle. There are five racers named `A`, `B`, `C`, `D`, and `E`. Each finish the race as follows:
+簡単な論理パズルを使って、学習します。
+論理パズルの説明:
+- 5人の競技者`A`、`B`、`C`、`D`、`E`がいます
+- それぞれ以下の条件で競技を終わります
+    - `C` は、`B`の前でフィニッシュしますが、`D`の後ろでフィニッシュ
+    - `E`は、`A`の前でフィニッシュしますが、`B`の後ろでフィニッシュ
 
-- `C` finishes before `B`, but not before `D`
-- `E` finishes before `A`, but not before `B`
+上記の条件が成立する、順番はどうなりますか？
 
-What is the finish order?
+別の競技者の前に誰がフィニッシュするのかという競技者間の関連性がわかります。その関連をどのように表現しますか？
 
-We have a relation between racers that determines who finishes before another racer. How can we capture such a relation?
+比較記述を組み合わせて整数を使ったスクリプトを作成してみます。
+まずは、クエリファイル`PuzzleOneAttemptOne.ql`を作成します。
+そして、`PuzzleOne`ディレクトリの下に、対応するQLのテストも作成します。
 
-Let's start with a first attempt where we use integers combined with comparison expressions. Create the query file `PuzzleOneAttemptOne.ql` and the corresponding QL test files in the directory `PuzzleOne`.
-
-```ql file=./src/solutions/PuzzleOneAttemptOne.ql
+```
+ql file=./src/solutions/PuzzleOneAttemptOne.ql
 ```
 
-When we run this query we get the following results.
+このクエリを実行すると、次のような結果を見ることできます。
 
-```diff file=./tests/solutions/PuzzleOneAttemptOne.expected
 ```
-
-Representing the correct result `D` `C` `B` `E` `A`.
-
-However, the query doesn't seem very *elegant*. We have to manually construct the final result. What if we add more racers, lets say up to a total of 1024? That would become very unwieldy. We need a better way to capture the relation between two racers.
-
-In logic, a *predicate* represents a property or relation. QL, being a logical language, supports predicates. Create the query file `PuzzleOneAttemptTwo.ql` and the corresponding QL test files. In the query file define the predicate `finishesBefore` that captures the relation between the racers.
-
-```ql file=./src/solutions/PuzzleOneAttemptTwoA.ql
+diff file=./tests/solutions/PuzzleOneAttemptOne.expected
 ```
+正解の結果は、`D` `C` `B` `E` `A`となります。
 
+しかし、このクエリは、*elegant*ではないです。最終結果を手動で構築しなければなりません。競技者を追加した場合を考えて見ましょう。例えば、最大1024人になった場合を想像して見ましょう。もう手に負えないことが想像できると思います。2人の競技者間の関連性を見つけるより良い解決策が必要です。
+
+ロジックの中で、*predicate* は属性もしくは、依存関係を表現します。ロジック言語ではあるQLはpredicateをサポートします。
+`PuzzleOneAttemptTwo.ql`クエリファイルと、それに対応したQLテストを作成します。そのクエリファイルの中で、predicate宣言した`finishesBefore`を定義します。このpredicateは競技者間の依存環境をキャプチャします。
+
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoA.ql
+```
+`codeql test run`を実行して、そこで生成されたデータベース`PuzzleOne.testproj`をマウントします。
 Run the `PuzzleOneAttemptTwo.qlref` test and mount the test database `PuzzleOne.testproj` of the failed test. Note that the test database has the name of the test directory, because the parent directory of each `.qlref` file is used to construct a test database.
 
-With the test database mounted we can now test our predicate `finishesBefore` with quick evaluation. The Visual Studio Code editor will provide hints as to what can be quick evaluated.
+テストデータベースをマウントして、predicate`finishesBefore`をテストします。Visual Studio Code Editorは簡単に評価について、ヒントを提供します。
 
 ![img](/assets/images/QLC/100/quick-evaluation.png "Quick evaluating hint on `finishesBefore` predicate.")
 
-The result of quick evaluating the `finishesBefore` predicate should match:
+predicate`finishesBefore`の簡単な評価は、PuzzleOneAttemptTwoA.expectedと同一になることです。:
 
-```ql file=./tests/solutions/PuzzleOneAttemptTwoA.expected
+```
+ql file=./tests/solutions/PuzzleOneAttemptTwoA.expected
 ```
 
-The quick evaluation functionality is super useful when debugging your logic. Besides the hints provided by Visual Studio Code you can also select *formulas*, *expressions*, and *types* and quick evaluate them with a right-click to access the `CodeQL: Quick Evaluation` command.
+簡単な評価機能は、ロジックをデバッグする際に、ちょー役立つものです。さらにVisual Studio Codeによって提供されるヒントに加え、*formulas*, *expressions*, *types*を選択でき、`CodeQL: Quick Evaluation`コマンドを使って、それらを検証できます。
 
 ![img](/assets/images/QLC/100/partial-quick-evaluation.png "Quick evaluating the first two disjunctions.")
 
-To find the finish order we want to *connect* the tuples created by the predicate `finishesBefore`. For example, `(D, C)` and `(C, B)` to get a partial finish order `(D,C,B)`. That is, the second argument in one predicate call becomes the first argument in another call.
+フィニッシュ順を見つけるために、predicate`finishesBefore`で生成された配列(タプル)に*接続*します。例えば、部分的にフィニッシュ順を取得するために`(D, C)` と `(C, B)`と表現します。1つのpredicateの二番目の引数は別のコールの一番目の引数となります。
 
 <details><summary>Implement a query to find the partial finish order `D C B` using the `finishesBefore` predicate.</summary>
 
@@ -66,19 +74,19 @@ select one, two, three
 
 </details>
 
-The solution works well for this partial finish order, but we are back to representing each of the racers as a variable and having to make multiple predicate calls to get the complete finish order.
+この部分的なフィニッシュ順については、このソリューションで機能します。しかし、変数として、競技者それぞれの表現に戻ってみます。そして、最終的なフィニッシュ順を結果を得るために、複数のpredicate callを実施する必要があります。
 
-This repeated connecting of predicate calls is a common pattern in reachability problems and are typically concerned with whether one location can reach another location given a step function. More concrete examples are:
+この繰り返し、predicate callを使うことは、探索プログラムにおける共通パターンです。そして典型的に１つの場所から別の場所へ到達できるか Step機能を利用することでどうか考慮する。具体的な例を以下に示します。:
 
-- Can function `foo` reach function `bar` through function calls?
-- Can the value of variable `foo` reach argument `bar` of function `baz`?
+- 関数コールを使って、`foo`が、関数`bar`に到達できるか？
+- 変数の値`foo`は、関数`baz`の引数`bar`に到達することができるか？
 
-We can treat the finish order problem as a reachability problem by finding the path from the first finisher to the last.
+最初にゴールした人から最後の競技者へのパスを見つけることで、到達問題として、ゴール到達順問題を利用することができます。
 
-QL supports the repeated application of a predicate through recursion. In a recursive predicate we have to consider two cases:
+QLは、再帰呼び出しを使って、predicateの繰り返しアプリをサポートします。再帰predicateの中で、２つのケースを考慮しなければいけません。:
 
-1. The base case, which determines when we are done.
-2. The recursive case
+1. 基本ケースとして、完了したことを決定する。
+2. 再帰呼び出しケース
 
 The following example demonstrates how recursion can be used to find all the finishers after a certain finisher. Note that we renamed the predicate `finishesBefore` to `finishesBeforeStep` to highlight it is a step function.
 
