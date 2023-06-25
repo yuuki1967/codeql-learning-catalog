@@ -64,9 +64,9 @@ ql file=./tests/solutions/PuzzleOneAttemptTwoA.expected
 
 フィニッシュ順を見つけるために、predicate`finishesBefore`で生成された配列(タプル)に*接続*します。例えば、部分的にフィニッシュ順を取得するために`(D, C)` と `(C, B)`と表現します。1つのpredicateの二番目の引数は別のコールの一番目の引数となります。
 
-<details><summary>Implement a query to find the partial finish order `D C B` using the `finishesBefore` predicate.</summary>
+<details><summary>predicate`finishesBefore`を使って、一部のゴールする順が`D C B`を検出するクエリを実装</summary>
 
-```ql
+```
 from string one, string two, string three
 where one = "D" and finishesBefore(one, two) and finishesBefore(two, three)
 select one, two, three
@@ -88,104 +88,102 @@ QLは、再帰呼び出しを使って、predicateの繰り返しアプリをサ
 1. 基本ケースとして、完了したことを決定する。
 2. 再帰呼び出しケース
 
-The following example demonstrates how recursion can be used to find all the finishers after a certain finisher. Note that we renamed the predicate `finishesBefore` to `finishesBeforeStep` to highlight it is a step function.
+次の例は、最初にゴールした人の後に、すべての人がゴールするのを確認するのに、再帰がどのように利用されるのかをデモンストレーションします。ポイントは、１つのステップで、`finishesBefore`から`finishesBeforeStep`へ名前を変更することです。
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoB.ql#L1-L17
 
 ```
 
-The base case is our step predicate `finishesBeforeStep`, finding all the finishers reachable with a single step. The recursive case uses the [quantified formula](https://codeql.github.com/docs/ql-language-reference/formulas/#quantified-formulas) [exists](https://codeql.github.com/docs/ql-language-reference/formulas/#exists). Quantified formulas allow us to introduce temporary variables that we can use in the formula's body to create new formulas from existing ones. The `exists` formula has the syntax `exists(<variable declarations> | <formula>)`. The syntax used in our example, `exists(<variable declarations> | <formula1> | <formula2>)`, is equivalent to `exists(<variable declarations> | <formula1> and <formula2>)`.
+基本になるケースが、1 ステップですべてゴールした人を見つける`finishesBeforeStep`です。再帰呼び出しが[quantified formula](https://codeql.github.com/docs/ql-language-reference/formulas/#quantified-formulas) [exists](https://codeql.github.com/docs/ql-language-reference/formulas/#exists)を利用します。
+`quantified formula(定量化する公式)`は、既存の公式から、新しい公式を作成するための公式の本体の中で利用できるような、作業用変数を使えるようにします。`exists`の文法は、`exists(<variable declarations> | <formula>)`です。文法例は、`exists(<variable declarations> | <formula1> | <formula2>)`と`exists(<variable declarations> | <formula1> and <formula2>)`は同一という例です。
 
-We use the `exists` to create a new formula from the predicate `finishesBeforeStep` and the predicate `finishesBefore` to find another racer that we can reach with a single step and all the racers that reachable from that other racer.
+1ステップで、次のゴールする人を見つけるpredicate`finishesBeforeStep`とpredicate `finishesBefore`から、新しい公式を作成するために、`exists`を使います。そして別の人からすべてのゴール人を見つけます。
 
-Quick evaluating the new `finishesBefore` predicate provides us with the result:
+結果を提供するpredicate`finishesBefore`を検証します。:
 
 ```ql file=./tests/solutions/PuzzleOneAttemptTwoB.expected
 ```
 
-Because this type of recursion is very common QL has implemented a shortcut that computes a [transitive closure](https://codeql.github.com/docs/ql-language-reference/recursion/#transitive-closures) of a predicate. The transitive closure is obtained by repeatedly calling a predicate.
+再帰は大変一般的であるため、QLは、[transitive closure](https://codeql.github.com/docs/ql-language-reference/recursion/#transitive-closures)を実行するショートカットを実装します。推移閉包(transitive closure)は、predicateを繰り返し呼び出すことで獲得します。
 
-QL has two types of transitive closures. The transitive closure `+` that calls a predicate one ore more times. The reflexive transitive closure `*` calls a predicate zero or more times. The transitive closure of a predicate call can be used by appending a `+` or a `*` to the predicate name in a predicate call.
+QLは、2つのタイプのtransitive closure(推移閉包)を持ちます。transitive closure`+`は1回以上のpredicateをコールします。再帰のtransitive closure`*`は0回を含む複数回のpredicateをコールします。predicateのtransitive closureは、predicateコールの中で、predicateに`+`もしくは`*`を追加して使用します。
 
-Using our step function we can compute the transitive closure by calling it as `finishesBeforeStep+(racerOne, racerTwo)`.
+今回の実装するstep functionを使うことで、`finishesBeforeStep+(racerOne, racerTwo)`として、それを呼び出すことで実行することができます。
 
-The transitive closure cannot be used on all predicate calls. The predicate must have two arguments with types that are [compatible](https://codeql.github.com/docs/ql-language-reference/types/#type-compatibility).
+transtitive closureは、すべてのpredicateコールで使用できるわけではありません。predicateは、[compatible](https://codeql.github.com/docs/ql-language-reference/types/#type-compatibility)にある型を持つ２つの引数である必要があります。
 
-<details><summary>Write a query that uses the transitive closure of the predicate `finishesBeforeStep` to compute the same results as the recursive predicate `finishesBefore`.</summary>
+<details><summary>再帰呼び出しpredicate`finishesBefore`と同じ結果を実行するためのpredicate`finishesBeforeStep`のtransitive closureを使うクエリを記述</summary>
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoC.ql#L11-L14
 
 ```
 
 </details>
+結果が同じであること決めるために、CodeQL extensionの`Query History`ペインの中の`Compare Results`オプションを利用することができる。
 
-To determine if the results are the same you can use the `Compare Results` option in the `Query History` pane of the CodeQL extension.
-
-Select to last two items in the history, right-click, and select `Compare Results`. This should result in an empty comparison.
+履歴で最後の２アイテムを選択するために、マウスを右クリックして、`Compare Results`を選択します。This should result in an empty comparison.
 
 ![img](/assets/images/QLC/100/compare-results.png "Compare query results")
 
-With our transitive closure we are almost done with finding the finish order. First we want to limit the reachable racers from the first finisher. Secondly we want a single answer.
+実装したtransitive closureを使うと、ゴールの順を求めることができます。まず最初に、最初にゴール人からゴールした人数に制限をしたい。次に回答は１つにしたい。
 
-Let's continue with determining which racer is the first to finish.
+誰が最初にゴールするのか決定するよう、作業を続けます。
 
-<details><summary>How can you determine who is the first finisher?</summary>
+<details><summary>どのようにして、最初にゴールした人を決定すれば良いですか？</summary>
 
-The first finisher is a finisher with no finisher before them. That is, it is not the case there exists another finisher that finishes before the first one.
+最初にゴールした人は、彼らの前に誰もフィニッシュしていないことです。最初の人の前に誰もゴールした人が存在していないことを条件を満たすことです。
 
 </details>
 
-In QL you can negate a formula by prepending a `not` to that formula. For example, the following query returns all pairs where `racerOne` does not finish before `racerTwo`.
+QLの中で、公式の先頭に`not`を追加することで、否定を意味します。例えば、次のクエリは、`raceTwo`の前に`racerOne`はフィニッシュしていないすべてのペアを返しています。
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoD.ql#L11-L16
 ```
 
-The extra equality expressions for `racerOne` and `racerTwo` are required because we can't determine the range of values for `racerOne` and `racerTwo` from a negation. That is, `not` is not [binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding). Without those the CodeQL will give an error that `racerOne` and `racerTwo` are not bounded to a value. This is caused by the fact that many of the primitive types including `string` are infinite. They have an infinite number of values. Since QL can only work with finite results we need to restrict the set of values for the result. Before, that was done by the `finishesBeforeStep` predicate.
+`racerOne`と`racerTwo`に関して、追加で品質の表現を必要とします。`racerOne`と`racerTwo`の取りうる値の範囲を決めることができないためです。`not`は、[binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding)を否定することです。これらの機能なしで、CodeQLが`racerOne`、`racerTwo`の値が境界内にない場合にエラーを与えることはできないです。`string`を含むprimitiveのタイプの多くが、無限であるという事実に起因します。QLは、有限の結果で動作するため、結果に対して制限すべきです。これまでは、predicate `finishesBeforeStep`によって実施しました。
 
-To restrict the set of values we use the member predicate `charAt` that expects an index. We, however, are not interested in a particular index so we pass the [dont'-care expression](https://codeql.github.com/docs/ql-language-reference/expressions/#don-t-care-expressions). That is any value which will result in calling the predicate with all the indices binding the racers to the characters `["A", "B", "C", "D", "E"]`. `racerOne = "ABCDE".charAt(_)` is equivalent to `racerOne = ["A", "B", "C", "D", "E"]` where the latter is the [set literal expression](https://codeql.github.com/docs/ql-language-reference/expressions/#set-literal-expressions) we used in the very beginning.
+一連の値を制限するために、インデックスを引数にとるmember predicate `charAt`を使用します。しかし、[dont'-care expression](https://codeql.github.com/docs/ql-language-reference/expressions/#don-t-care-expressions)を設定した場合には、インデックスは関係ありません。競技者を`["A", "B", "C", "D", "E"]`にバインドするpredicateの結果になります。`racerOne = "ABCDE".charAt(_)` は、`racerOne = ["A", "B", "C", "D", "E"]`に等しいという意味です。レターは、[set literal expression](https://codeql.github.com/docs/ql-language-reference/expressions/#set-literal-expressions)となります。
 
-<details><summary>Using the `not` formula, write a predicate `firstFinisher` that holds if a finisher is the first finisher. Remember, `not` is not [binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding).</summary>
+<details><summary>`not`表現を使用すると、ゴールした人が最初の人である場合、predicate `firstFinisher`に書き込まれます。`not`は[binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding)でないことを思い出してください。</summary>
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoE.ql#L11-L14
 ```
 
 </details>
 
-With the `firstFinisher` predicate we can now limit the results to the first finisher and all those that are reachable from the first finisher.
+predicate `firstFinisher`を使って、最初にゴールする人と、最初のゴールから追跡できるすべての人への追跡結果を限定することができます。
 
-<details><summary>Write a query that returns the first finisher and all the finisher reachable from that first finisher.</summary>
+<details><summary>最初にゴールする人と、最初にゴールした人からすべてのゴールした人を返すクエリを記述します。</summary>
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoF.ql#L16-L18
 ```
 
 </details>
+今、最初にゴールした人、および、その後にゴールした人すべてを知ることができました。しかし、複数の結果です。最後のハンズオンは、最終のゴールした順を取得することです。[aggregate](https://codeql.github.com/docs/ql-language-reference/expressions/#aggregations)を利用します。
 
-So now we have the first finisher and all those that finish after. However, there are still multiple results. The last task is to [aggregate](https://codeql.github.com/docs/ql-language-reference/expressions/#aggregations) the finishers to get the final finish order.
+集合`[[https://codeql.github.com/docs/ql-language-reference/expressions/#aggregations][concat]]`は、面白そうですが、順番を適切にコントロールすることはできないです。
 
-In our case the aggregate `[[https://codeql.github.com/docs/ql-language-reference/expressions/#aggregations][concat]]` looks interesting, however, we can't properly control the order of the results which in this case is important.
-
-That is, the following does not give the correct order because strings are sorted lexicographically.
+文字列は、辞書学上でストアされるため、正しい順を得られない。
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoG.ql#L16-L20
 ```
 
-<details><summary>Why does the query use the reflexive transitive closure operator `*`?</summary>
-
-To include the `firstFinisher` that does not have a finisher before them.
-
-</details>
-
-That means we need to build the final finish order ourselves, recursively. We have seen recursion and the closely related transitive closure before. In most cases the transitive closure is sufficient, but sometimes you want more control. For example when the goal is to find all the functions reachable from a function `entrypoint` that are not reachable by an authorization function to determine authentication bypasses.
-
-In this case we want to build up the finish order from the first finisher. A recursive problem requires two cases, the base case, and the recursive case.
-
-<details><summary>The base case determines when we are done. What would that be in our problem?</summary>
-
-When we have reached the last finisher.
+<details><summary>どうして、再帰transitive closure オペレータ`*`を使うのか？</summary>
+その理由は、誰もゴールしていない`firstFinish`を含めるためです。
 
 </details>
 
-<details><summary>Implement the predicate `lastFinisher` using the already defined predicate `finishesBeforeStep`. You can take inspiration from the predicate `firstFinisher`. Remember that the `not` does not *bind*.</summary>
+再帰的に最後のゴール順を構築する必要があることを意味します。前回、再帰、相対transitive closureを見ました。大抵の場合、transitive closureは効果的ですが、より制御が必要な場合もあります。例えば、ゴールが関数`entrypoint`から到達できるすべての関数を見つけることである場合、認証を回避することを決定するための許可によって到達できません。
+
+この場合、最初のゴール人からのフィニッシュ順を構築したいです。再帰問題は、２つのケースを要求します。基本ケースと再帰ケースです。
+
+<details><summary>基本ケースは、いつ完了するのか、それは、それら問題の中に何があるのか？</summary>
+
+いつ、最後にゴールした人に到達しましたか？
+
+</details>
+
+<details><summary>先に実装したpredeicate `finishesBeforeStep`を使って、predicate `lastFinisher`を実装します。`firstFinisher`がヒントになります。`not`は*bind*しないということがヒントです。</summary>
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwoH.ql#L16-L18
 predicate lastFinisher(string racer) {
@@ -195,7 +193,7 @@ predicate lastFinisher(string racer) {
 
 </details>
 
-<details><summary>Write the predicate `finishOrderFor`. QL supports [predicates with results](https://codeql.github.com/docs/ql-language-reference/predicates/#predicates-with-result). A predicate with a result is defined by replacing the keyword `predicate` with the type of the result. The result can be referenced through a special variable `result`. Semantically it is the same as predicates without a result, the result would just be a parameter, but it can result in a more readable query because you can omit a `exists`.
+<details><summary>predicate `finishOrderFor`を記述します。 QLは、[predicates with results](https://codeql.github.com/docs/ql-language-reference/predicates/#predicates-with-result)をサポートします。結果を持つpredicateは、結果の型を持つpredicateに置き換えることです。 結果は、特定の変数`result`で参照します。いい身的には、結果なしのpredicateと同じです。結果は、単なるパラメタですが、`exists`を入れないために、より読みやすくすることができます。
 
 ```ql
 string finishOrderFor(string racer) {
@@ -205,12 +203,12 @@ string finishOrderFor(string racer) {
 
 </summary>
 
-With the predicate `finishesBeforeStep` rewritten as a predicate with a value, and the predicate `finishOrderFor` written as a predicate with a value, the complete query becomes.
+値とともにpredicate`finishesBeforeStep`を書き直し、値を持ったpredicate`finishOrderFor`を実装することでクリエが完成です。
 
 ```ql file=./src/solutions/PuzzleOneAttemptTwo.ql
 ```
 
-The result of this query should be:
+このクエリの結果は、このようになります。:
 
 ```ql file=./tests/solutions/PuzzleOneAttemptTwo.expected
 ```
