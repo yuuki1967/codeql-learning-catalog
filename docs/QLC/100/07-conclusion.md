@@ -5,9 +5,8 @@ octicon: package
 toc: false
 ---
 
-In this quickstart we have:
-
-- setup a development environment,
-- looked at CodeQL packs for queries and tests,
-- learned about the structure of a query, and
-- used predicates to solve a logic puzzle.
+サマリー:
+- 開発環境のセットアップ
+- クエリとテスト用CodeQL packs作成
+- クエリの構成の理解
+- predicateを使って論理パズルを解く 
