@@ -1,0 +1,7 @@
+---
+library: false
+warnOnImplicitThis: false
+name: ldf-101-ts/solutions
+version: 0.0.1
+dependencies:
+  codeql/javascript-all: "*"

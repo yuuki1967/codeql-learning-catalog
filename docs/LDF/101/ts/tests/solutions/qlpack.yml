@@ -1,0 +1,8 @@
+---
+library: false
+warnOnImplicitThis: false
+name: ldf-101-ts-tests/solutions
+version: 0.0.1
+extractor: javascript
+dependencies:
+  ldf-101-ts/solutions: "*"

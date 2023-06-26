@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"name": "Quick Queries",
+			"path": "../../../../../../Library/Application Support/Code/User/workspaceStorage/862b923a7f9f9df287cf480075639037/GitHub.vscode-codeql/quick-queries"
+		}
+	],
+	"settings": {
+		"sarif-viewer.connectToGithubCodeScanning": "off"
+	}
+}

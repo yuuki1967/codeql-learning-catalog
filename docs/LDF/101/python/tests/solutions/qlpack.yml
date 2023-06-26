@@ -1,0 +1,8 @@
+---
+library: false
+warnOnImplicitThis: false
+name: ldf-101-python-tests/solutions
+version: 0.0.1
+extractor: python
+dependencies:
+  ldf-101-python/solutions: "*"
