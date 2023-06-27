@@ -63,7 +63,10 @@ touch tests/problems/PuzzleOneAttemptTwoA.expected
 predicate`finishesBefore`の簡単な評価は、PuzzleOneAttemptTwoA.expectedと同一になることです。:
 
 ```
-ql file=./tests/solutions/PuzzleOneAttemptTwoA.expected
+| B | E |
+| C | B |
+| D | C |
+| E | A |
 ```
 
 簡単な評価機能は、ロジックをデバッグする際に、ちょー役立つものです。さらにVisual Studio Codeによって提供されるヒントに加え、*formulas*, *expressions*, *types*を選択でき、`CodeQL: Quick Evaluation`コマンドを使って、それらを検証できます。
@@ -99,7 +102,6 @@ QLは、再帰呼び出しを使って、predicateの繰り返しアプリをサ
 次の例は、最初にゴールした人の後に、すべての人がゴールするのを確認するのに、再帰がどのように利用されるのかをデモンストレーションします。ポイントは、１つのステップで、`finishesBefore`から`finishesBeforeStep`へ名前を変更することです。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoB.ql#L1-L17
 predicate finishesBeforeStep(string racerOne, string racerTwo) {
     racerOne = "C" and racerTwo = "B"
     or
@@ -127,7 +129,6 @@ predicate finishesBefore(string racerOne, string racerTwo) {
 結果を提供するpredicate`finishesBefore`を検証します。:
 
 ```
-ql file=./tests/solutions/PuzzleOneAttemptTwoB.expected
 | B | A |
 | B | E |
 | C | A |
@@ -151,7 +152,6 @@ transtitive closureは、すべてのpredicateコールで使用できるわけ�
 <details><summary>再帰呼び出しpredicate`finishesBefore`と同じ結果を実行するためのpredicate`finishesBeforeStep`のtransitive closureを使うクエリを記述</summary>
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoC.ql#L11-L14
 from string racerOne, string racerTwo
 where
   finishesBeforeStep+(racerOne, racerTwo)
@@ -179,12 +179,11 @@ select racerOne, racerTwo
 QLの中で、公式の先頭に`not`を追加することで、否定を意味します。例えば、次のクエリは、`raceTwo`の前に`racerOne`はフィニッシュしていないすべてのペアを返しています。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoD.ql#L11-L16
 from string racerOne, string racerTwo
 where
-not finishesBeforeStep+(racerOne, racerTwo) and
-racerOne = "ABCDE".charAt(_) and
-racerTwo = "ABCDE".charAt(_)
+  not finishesBeforeStep+(racerOne, racerTwo) and
+  racerOne = "ABCDE".charAt(_) and
+  racerTwo = "ABCDE".charAt(_)
 select racerOne, racerTwo
 ```
 
@@ -195,7 +194,6 @@ select racerOne, racerTwo
 <details><summary>`not`表現を使用すると、ゴールした人が最初の人である場合、predicate `firstFinisher`に書き込まれます。`not`は[binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding)でないことを思い出してください。</summary>
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoE.ql#L11-L14
 predicate firstFinisher(string racer) {
     finishesBeforeStep(racer, _) and
     not exists(string otherRacer | finishesBeforeStep(otherRacer, racer))
@@ -209,7 +207,6 @@ predicate `firstFinisher`を使って、最初にゴールする人と、最初�
 <details><summary>最初にゴールする人と、最初にゴールした人からすべてのゴールした人を返すクエリを記述します。</summary>
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoF.ql#L16-L18
 from string firstFinisher, string other
 where finishesBeforeStep+(firstFinisher, other) and firstFinisher(firstFinisher)
 select firstFinisher, other
@@ -223,7 +220,6 @@ select firstFinisher, other
 文字列は、辞書学上でストアされるため、正しい順を得られない。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoG.ql#L16-L20
 from string firstFinisher, string finalOrder
 where
     firstFinisher(firstFinisher) and
@@ -248,7 +244,7 @@ select finalOrder
 
 <details><summary>先に実装したpredeicate `finishesBeforeStep`を使って、predicate `lastFinisher`を実装します。`firstFinisher`がヒントになります。`not`は*bind*しないということがヒントです。</summary>
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoH.ql#L16-L18
+```
 predicate lastFinisher(string racer) {
     not finishesBeforeStep(racer, _) and finishesBeforeStep(_, racer)
 }
@@ -269,7 +265,6 @@ string finishOrderFor(string racer) {
 値とともにpredicate`finishesBeforeStep`を書き直し、値を持ったpredicate`finishOrderFor`を実装することでクリエが完成です。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwo.ql
 string finishesBeforeStep(string racer) {
   racer = "C" and result = "B"
   or
@@ -306,7 +301,6 @@ select finalOrder
 このクエリの結果は、このようになります。:
 
 ```
-ql file=./tests/solutions/PuzzleOneAttemptTwo.expected
 | DCBEA |
 ```
 
