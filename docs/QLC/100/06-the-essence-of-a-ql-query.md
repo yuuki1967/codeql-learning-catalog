@@ -58,7 +58,7 @@ touch tests/problems/PuzzleOneAttemptTwoA.expected
 
 テストデータベースをマウントして、predicate`finishesBefore`をテストします。Visual Studio Code Editorは簡単に評価について、ヒントを提供します。
 
-![img](/assets/images/QLC/100/quick-evaluation.png "Quick evaluating hint on `finishesBefore` predicate.")
+![img](/public/assets/images/QLC/100/quick-evaluation.png "Quick evaluating hint on `finishesBefore` predicate.")
 
 predicate`finishesBefore`の簡単な評価は、PuzzleOneAttemptTwoA.expectedと同一になることです。:
 
@@ -71,7 +71,7 @@ predicate`finishesBefore`の簡単な評価は、PuzzleOneAttemptTwoA.expected�
 
 簡単な評価機能は、ロジックをデバッグする際に、ちょー役立つものです。さらにVisual Studio Codeによって提供されるヒントに加え、*formulas*, *expressions*, *types*を選択でき、`CodeQL: Quick Evaluation`コマンドを使って、それらを検証できます。
 
-![img](/assets/images/QLC/100/partial-quick-evaluation.png "Quick evaluating the first two disjunctions.")
+![img](/public/assets/images/QLC/100/partial-quick-evaluation.png "Quick evaluating the first two disjunctions.")
 
 フィニッシュ順を見つけるために、predicate`finishesBefore`で生成された配列(タプル)に*接続*します。例えば、部分的にフィニッシュ順を取得するために`(D, C)` と `(C, B)`と表現します。1つのpredicateの二番目の引数は別のコールの一番目の引数となります。
 
@@ -164,7 +164,7 @@ select racerOne, racerTwo
 
 履歴で最後の２アイテムを選択するために、マウスを右クリックして、`Compare Results`を選択します。This should result in an empty comparison.
 
-![img](/assets/images/QLC/100/compare-results.png "Compare query results")
+![img](/public/assets/images/QLC/100/compare-results.png "Compare query results")
 
 実装したtransitive closureを使うと、ゴールの順を求めることができます。まず最初に、最初にゴール人からゴールした人数に制限をしたい。次に回答は１つにしたい。
 
