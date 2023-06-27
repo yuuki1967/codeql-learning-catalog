@@ -61,17 +61,23 @@ toc: false
     1. 次のコンテンツを使って、`qlc-100/problems`CodeQL packに、`FromWhereSelect.ql'クエリを追加します。
 
         ```
-        ql file=./src/solutions/FromWhereSelect.ql
+        cp src/solutions/FromWhereSelect.ql src/problems
         ```
 
     2. `tests/problems/FromWhereSelect`ディレクトリを作成して、`tests/solutions/FromWhereSelect.qlref`、`tests/solutions/FromWhereSelect.expected`を`tests/problems/FromWhereSelect`ディレクトリへ追加します。その際に、`FromWhereSelect.qlref`の中に、相対パス指定で、`FromWhereSelect.ql`が追加されていることをご確認ください。
+
+        ```
+        cp tests/solutions/FromWhereSelect.qlref tests/problems/FromWhereSelect
+        touch tests/problems/FromWhereSelect/FromWhereSelect.expected
+        ```
 
     3. `codeql test run`で作成したテストを実行します
 
     テストはfailします。
 
     ```
-    diff file=./tests/solutions/FromWhereSelect.expected
+    0 tests passed; 1 tests failed:
+  FAILED: /Users/yukiendo/workplace/codeql-learning-catalog/docs/QLC/100/tests/problems/FromWhereSelect/FromWhereSelect.qlref
     ```
 
     <details><summary>failの理由を考えます</summary>

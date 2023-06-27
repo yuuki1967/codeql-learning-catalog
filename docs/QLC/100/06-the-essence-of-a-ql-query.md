@@ -23,30 +23,38 @@ toc: false
 別の競技者の前に誰がフィニッシュするのかという競技者間の関連性がわかります。その関連をどのように表現しますか？
 
 比較記述を組み合わせて整数を使ったスクリプトを作成してみます。
-まずは、クエリファイル`PuzzleOneAttemptOne.ql`を作成します。
-そして、`PuzzleOne`ディレクトリの下に、対応するQLのテストも作成します。
+まずは、クエリファイル`PuzzleOneAttemptTwo.ql`を作成します。
+そして、`PuzzleOneAttemptTwo`ディレクトリの下に、対応するQLのテストも作成します。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptOne.ql
+cp src/solutions/PuzzleOneAttemptTwo.ql src/problems
+mkdir tests/problemes/PuzzleOneAttemptTwo
+cp tests/solutions/PuzzleOneAttemptTwo.qlref test/problems/PuzzleOneAttemptTwo
+touch tests/problems/PuzzleOneAttemptTwo.expected
 ```
 
 このクエリを実行すると、次のような結果を見ることできます。
 
 ```
-diff file=./tests/solutions/PuzzleOneAttemptOne.expected
++| DCBEA |
+[1/1 comp 91ms eval 41ms] FAILED(RESULT) /Users/yukiendo/workplace/codeql-learning-catalog/docs/QLC/100/tests/problems/PuzzleOneAttemptTwo/PuzzleOneAttemptTwo.qlref
+0 tests passed; 1 tests failed:
+  FAILED:
 ```
 正解の結果は、`D` `C` `B` `E` `A`となります。
 
 しかし、このクエリは、*elegant*ではないです。最終結果を手動で構築しなければなりません。競技者を追加した場合を考えて見ましょう。例えば、最大1024人になった場合を想像して見ましょう。もう手に負えないことが想像できると思います。2人の競技者間の関連性を見つけるより良い解決策が必要です。
 
 ロジックの中で、*predicate* は属性もしくは、依存関係を表現します。ロジック言語ではあるQLはpredicateをサポートします。
-`PuzzleOneAttemptTwo.ql`クエリファイルと、それに対応したQLテストを作成します。そのクエリファイルの中で、predicate宣言した`finishesBefore`を定義します。このpredicateは競技者間の依存環境をキャプチャします。
+`PuzzleOneAttemptTwoA.ql`クエリファイルと、それに対応したQLテストを作成します。そのクエリファイルの中で、predicate宣言した`finishesBefore`を定義します。このpredicateは競技者間の依存環境をキャプチャします。
 
 ```
-ql file=./src/solutions/PuzzleOneAttemptTwoA.ql
+cp src/solutions/PuzzleOneAttemptTwoA.ql src/problems
+mkdir tests/problemes/PuzzleOneAttemptTwoA
+cp tests/solutions/PuzzleOneAttemptTwoA.qlref test/problems/PuzzleOneAttemptTwoA
+touch tests/problems/PuzzleOneAttemptTwoA.expected
 ```
-`codeql test run`を実行して、そこで生成されたデータベース`PuzzleOne.testproj`をマウントします。
-Run the `PuzzleOneAttemptTwo.qlref` test and mount the test database `PuzzleOne.testproj` of the failed test. Note that the test database has the name of the test directory, because the parent directory of each `.qlref` file is used to construct a test database.
+`codeql test run`を実行して、そこで生成されたデータベース`PuzzleOneAttemptTwoA.testproj`をマウントします。
 
 テストデータベースをマウントして、predicate`finishesBefore`をテストします。Visual Studio Code Editorは簡単に評価について、ヒントを提供します。
 
@@ -90,8 +98,25 @@ QLは、再帰呼び出しを使って、predicateの繰り返しアプリをサ
 
 次の例は、最初にゴールした人の後に、すべての人がゴールするのを確認するのに、再帰がどのように利用されるのかをデモンストレーションします。ポイントは、１つのステップで、`finishesBefore`から`finishesBeforeStep`へ名前を変更することです。
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoB.ql#L1-L17
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoB.ql#L1-L17
+predicate finishesBeforeStep(string racerOne, string racerTwo) {
+    racerOne = "C" and racerTwo = "B"
+    or
+    racerOne = "D" and racerTwo = "C"
+    or
+    racerOne = "E" and racerTwo = "A"
+    or
+    racerOne = "B" and racerTwo = "E"
+}
 
+predicate finishesBefore(string racerOne, string racerTwo) {
+    finishesBeforeStep(racerOne, racerTwo)
+    or
+    exists(string otherRacer | finishesBeforeStep(racerOne, otherRacer) |
+    finishesBefore(otherRacer, racerTwo)
+    )
+}
 ```
 
 基本になるケースが、1 ステップですべてゴールした人を見つける`finishesBeforeStep`です。再帰呼び出しが[quantified formula](https://codeql.github.com/docs/ql-language-reference/formulas/#quantified-formulas) [exists](https://codeql.github.com/docs/ql-language-reference/formulas/#exists)を利用します。
@@ -101,7 +126,18 @@ QLは、再帰呼び出しを使って、predicateの繰り返しアプリをサ
 
 結果を提供するpredicate`finishesBefore`を検証します。:
 
-```ql file=./tests/solutions/PuzzleOneAttemptTwoB.expected
+```
+ql file=./tests/solutions/PuzzleOneAttemptTwoB.expected
+| B | A |
+| B | E |
+| C | A |
+| C | B |
+| C | E |
+| D | A |
+| D | B |
+| D | C |
+| D | E |
+| E | A |
 ```
 
 再帰は大変一般的であるため、QLは、[transitive closure](https://codeql.github.com/docs/ql-language-reference/recursion/#transitive-closures)を実行するショートカットを実装します。推移閉包(transitive closure)は、predicateを繰り返し呼び出すことで獲得します。
@@ -114,7 +150,12 @@ transtitive closureは、すべてのpredicateコールで使用できるわけ�
 
 <details><summary>再帰呼び出しpredicate`finishesBefore`と同じ結果を実行するためのpredicate`finishesBeforeStep`のtransitive closureを使うクエリを記述</summary>
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoC.ql#L11-L14
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoC.ql#L11-L14
+from string racerOne, string racerTwo
+where
+  finishesBeforeStep+(racerOne, racerTwo)
+select racerOne, racerTwo
 
 ```
 
@@ -137,7 +178,14 @@ transtitive closureは、すべてのpredicateコールで使用できるわけ�
 
 QLの中で、公式の先頭に`not`を追加することで、否定を意味します。例えば、次のクエリは、`raceTwo`の前に`racerOne`はフィニッシュしていないすべてのペアを返しています。
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoD.ql#L11-L16
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoD.ql#L11-L16
+from string racerOne, string racerTwo
+where
+not finishesBeforeStep+(racerOne, racerTwo) and
+racerOne = "ABCDE".charAt(_) and
+racerTwo = "ABCDE".charAt(_)
+select racerOne, racerTwo
 ```
 
 `racerOne`と`racerTwo`に関して、追加で品質の表現を必要とします。`racerOne`と`racerTwo`の取りうる値の範囲を決めることができないためです。`not`は、[binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding)を否定することです。これらの機能なしで、CodeQLが`racerOne`、`racerTwo`の値が境界内にない場合にエラーを与えることはできないです。`string`を含むprimitiveのタイプの多くが、無限であるという事実に起因します。QLは、有限の結果で動作するため、結果に対して制限すべきです。これまでは、predicate `finishesBeforeStep`によって実施しました。
@@ -146,7 +194,12 @@ QLの中で、公式の先頭に`not`を追加することで、否定を意味�
 
 <details><summary>`not`表現を使用すると、ゴールした人が最初の人である場合、predicate `firstFinisher`に書き込まれます。`not`は[binding](https://codeql.github.com/docs/ql-language-reference/evaluation-of-ql-programs/#binding)でないことを思い出してください。</summary>
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoE.ql#L11-L14
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoE.ql#L11-L14
+predicate firstFinisher(string racer) {
+    finishesBeforeStep(racer, _) and
+    not exists(string otherRacer | finishesBeforeStep(otherRacer, racer))
+}
 ```
 
 </details>
@@ -155,7 +208,11 @@ predicate `firstFinisher`を使って、最初にゴールする人と、最初�
 
 <details><summary>最初にゴールする人と、最初にゴールした人からすべてのゴールした人を返すクエリを記述します。</summary>
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoF.ql#L16-L18
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoF.ql#L16-L18
+from string firstFinisher, string other
+where finishesBeforeStep+(firstFinisher, other) and firstFinisher(firstFinisher)
+select firstFinisher, other
 ```
 
 </details>
@@ -165,7 +222,13 @@ predicate `firstFinisher`を使って、最初にゴールする人と、最初�
 
 文字列は、辞書学上でストアされるため、正しい順を得られない。
 
-```ql file=./src/solutions/PuzzleOneAttemptTwoG.ql#L16-L20
+```
+ql file=./src/solutions/PuzzleOneAttemptTwoG.ql#L16-L20
+from string firstFinisher, string finalOrder
+where
+    firstFinisher(firstFinisher) and
+    finalOrder = concat(string other | finishesBeforeStep*(firstFinisher, other) | other)
+select finalOrder
 ```
 
 <details><summary>どうして、再帰transitive closure オペレータ`*`を使うのか？</summary>
@@ -205,12 +268,46 @@ string finishOrderFor(string racer) {
 
 値とともにpredicate`finishesBeforeStep`を書き直し、値を持ったpredicate`finishOrderFor`を実装することでクリエが完成です。
 
-```ql file=./src/solutions/PuzzleOneAttemptTwo.ql
+```
+ql file=./src/solutions/PuzzleOneAttemptTwo.ql
+string finishesBeforeStep(string racer) {
+  racer = "C" and result = "B"
+  or
+  racer = "D" and result = "C"
+  or
+  racer = "E" and result = "A"
+  or
+  racer = "B" and result = "E"
+}
+
+predicate firstFinisher(string racer) {
+  exists(finishesBeforeStep(racer)) and
+  not racer = finishesBeforeStep(_)
+}
+
+predicate lastFinisher(string racer) {
+  not exists(finishesBeforeStep(racer)) and racer = finishesBeforeStep(_)
+}
+
+string finishOrderFor(string racer) {
+  lastFinisher(racer) and result = racer
+  or
+  result = racer + finishOrderFor(finishesBeforeStep(racer))
+}
+
+from string firstFinisher, string finalOrder
+where
+  firstFinisher(firstFinisher) and
+  finalOrder = finishOrderFor(firstFinisher)
+select finalOrder
+
 ```
 
 このクエリの結果は、このようになります。:
 
-```ql file=./tests/solutions/PuzzleOneAttemptTwo.expected
+```
+ql file=./tests/solutions/PuzzleOneAttemptTwo.expected
+| DCBEA |
 ```
 
 </details>

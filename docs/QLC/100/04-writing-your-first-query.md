@@ -7,10 +7,10 @@ toc: false
 
 クエリとテストCodeQL packを作成したので、ついに最初のクエリの作成に入ります。
 
-`qlc-100/problems` CodeQL packの中に`HelloWorld.ql` ファイルを作成します:
+`qlc-100/problems` CodeQL packの中に`HelloWorld.ql` をsrc/solutionsからコピーします。:
 
 ```
-c file=./src/solutions/HelloWorld.ql
+cp src/solutions/HelloWorld.ql src/problems
 ```
 
 最初のクエリになります。このクエリに対して、単体テストを実施するために、`qlc-100-tests/problems` CodeQL packに次のように追加します
@@ -19,18 +19,18 @@ c file=./src/solutions/HelloWorld.ql
 2. `HelloWorld`ディレクトリに、`HelloWorld.qlref`を作成して、以下の内容を入れる:
 
     ```
-    c file=./tests/solutions/HelloWorld.qlref
+    cp tests/solutions/HelloWorld.qlref tests/problems/HelloWorld
     ```
 
 3. `HelloWorld`ディレクトリに`HelloWorld.expected`を作成して、以下の内容を入れる:
 
     ```
-    c file=./tests/solutions/HelloWorld.expected
+    cp tests/solutions/HelloWorld.expected tests/problems/HelloWorld
     ```
 
 `HelloWorld.qlref`は、テストする参照クエリを指定します。CodeQL packへの相対パスで指定します。
 
-<details><summary>How does CodeQL know which CodeQL pack?</summary>
+<details><summary>CodeQLは、CodeQL packをどのようにして知ることができますか？</summary>
 
 CodeQLは、どのCodeQL packがクエリを含むのか決定するために依存関係を検索します。
 
