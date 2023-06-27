@@ -42,7 +42,7 @@ CodeQLは、どのCodeQL packがクエリを含むのか決定するために依
 
 テストで使用するqlpackの仕様では、 CodeQL extensionの依存性を持った[Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) を使ってテストを実行します。
 
-![img](/assets/images/QLC/100/test-explorer-ui-extension.png "The HelloWorld test listed in the Test Explorer UI")
+![img](/public/assets/images/QLC/100/test-explorer-ui-extension.png "The HelloWorld test listed in the Test Explorer UI")
 
 Test Explorer UI、もしくはターミナルからテストできます。
 

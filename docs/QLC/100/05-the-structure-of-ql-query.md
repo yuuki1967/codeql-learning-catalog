@@ -71,14 +71,13 @@ toc: false
         touch tests/problems/FromWhereSelect/FromWhereSelect.expected
         ```
 
-    3. `codeql test run`で作成したテストを実行します
-
+    3. `codeql test run`で作成したテストを実行します。
     テストはfailします。
 
-    ```
-    0 tests passed; 1 tests failed:
-  FAILED: /Users/yukiendo/workplace/codeql-learning-catalog/docs/QLC/100/tests/problems/FromWhereSelect/FromWhereSelect.qlref
-    ```
+        ```
+        0 tests passed; 1 tests failed:
+        FAILED: /Users/yukiendo/workplace/codeql-learning-catalog/docs/QLC/100/tests/problems/FromWhereSelect/FromWhereSelect.qlref
+        ```
 
     <details><summary>failの理由を考えます</summary>
 
@@ -88,7 +87,7 @@ toc: false
 
     各々のfailしたテストについて、CodeQL extensionはデータベースを保持します。それにより、failした理由を調査することができます。`FromWhereSelect`ディレクトリの中で、`FromWhereSelect.testproj`ファイルが生成されます。`CodeQL: Set Current Database`コマンドで、そのテストデータベースをVisual Studio Code上でマウントすることができます。Visual Studio Codeから、`FromWhereSelect.testproj`を右クリックして `CodeQL: Set Current Database`を選択します。
 
-    ![img](/assets/images/QLC/100/mount-testproj.png "Select the failed test database as the current database.")
+    ![img](/public/assets/images/QLC/100/mount-testproj.png "Select the failed test database as the current database.")
 
     failしたテストを調査するために、`CodeQL: Quick query`機能を使います。この機能は、マウントしてデータベースで、1回限りのクエリを即座に生成します。
 
@@ -104,17 +103,17 @@ toc: false
     select ""
     ```
 
-    ![img](/assets/images/QLC/100/quick-query-folder.png "Quick query folder added to the workspace")
+    ![img](/public/assets/images/QLC/100/quick-query-folder.png "Quick query folder added to the workspace")
 
     `quick-query.ql`ファイルは、選択したデータベースの言語にマッチしたスケルトンを作成します。ここにデバッグ用のスクリプトを入れます。
 
-    ![img](/assets/images/QLC/100/codeql-databases-section.png "CodeQL extension databases section")
+    ![img](/public/assets/images/QLC/100/codeql-databases-section.png "CodeQL extension databases section")
 
     作成したスクリプトを実行するために、コマンドパレット、もしくは、当該ファイル上右クリックで、`CodeQL: Run Query`を選択します。
 
     failした理由が判明したら、再度実行しながら、修正します。空の`FromWhereSelect.expected`でテストを実行し、その後、`codeql test accept tests/problems/FromWhereSelect/FromWhereSelect.qlref`を実行することで、`FromWhereSelect.expected`の中に、評価対象データを持つことできます。
 
-    ![img](/assets/images/QLC/100/accept-test-output.png "Accept test output")
+    ![img](/public/assets/images/QLC/100/accept-test-output.png "Accept test output")
 
 2. Imports
 
