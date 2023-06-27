@@ -6,151 +6,59 @@
 
 <br>
 
-The CodeQL Learning Catalog is a resource dedicated providing detailed CodeQL
-learning resources. The Catalog contains workshops, recordings, and learning
-paths for improving your knowledge and skill in using CodeQL.
+CodeQLラーニングカタログは、CodeQLを学習していただくためのハンズオンを含んだコンテンツとなります。
 
 # How to Use The Catalog
 
-The CodeQL Learning Catalog can be used in two different ways: as a workshop
-author and as a workshop participant. In either use case, you may launch a
-codespace from this repository with the following configurations:
+次の２つの環境でご利用いただけます。
+- Codespaces
+- ローカルPC
 
-- `.devcontainer/authors/devcontainer.json` - The container targeted for
-  authors. This contains additional tools for creating workshops. 
-- `.devcontainer/devcontainer.json` - The container for workshop participants.
-  This contains the components needed to execute the workshop examples. 
+##  Codespaces
+  Codespace環境設定と生成の手順を以下に説明します
+  1. ブランチ<ワークショップタイトル>-<レベル>を作成（例：`qlc-100`)
+  2. Code->Codespaces->+ New with option
+  <img src="public/assets/images/codespaces-1.png">
+  3. Create codespaceのウィンドウが表示されるので、各項目について選択
+  Branchは、１で作成したブランチ名を指定(`qlc-100`)、Dev container configurationには、`CodeQL Learning Catalog(Authors)`、Machine Typeは`8-core`推奨
+  <img src="public/assets/images/codespaces-2.png">
+  4. 設定が完了したら、`Create codespace`ボタン押下
 
-The finished workshops may be found on the web at:
-https://codeql-learning-catalog.github.com 
+## ローカルPC
+  git cloneコマンドで、本リポジトリをローカルにクローン
 
-# Authoring Guide 
+## ディレクトリ構成  
 
-For authors, there are 5 main steps that you must perform to author a workshop.
-If you are authoring a tailored workshop you must perform an additional step,
-which is forking this repository within the customer organization. 
+ディレクトリ構成について説明します。ワークショップは、すべて`docs`ディレクトリは以下になります。
+その下に２つのワークショップがあります。１つは言語に依存しないワークショップ、もう１つは言語依存のワークショップとなります。言語依存のワークショップは現在C++,pythonの２つになります。
 
-1. [ ] Create / Pickup Tracking Issue
-2. [ ] Identify an Editor
-3. [ ] Identify Workshop Prefix
-4. [ ] Identify Workshop Code 
-5. [ ] Fork Repository **(Tailored Workshops Only)**
-6. [ ] Open and Merge your PR :tada: 
+### 言語非依存のワークショップ 
 
-## Step 1: Create / Pickup Tracking Issue
-
-- All workshop development is accompanied with a tracking issue, which can be
-found in the issues tab of this repository. 
-
-- You will use the tracking issue for the development of your workshop. It might
-  already exist! In that case you will pick up the existing issue. Otherwise,
-  feel free to create it using our issue templates. 
-
-<img src="public/assets/images/issue-template.png">
-
-## Step 2: Identify an Editor
-
-An editor is like a code reviewer in that they are responsible for approving the
-PR containing your workshop. However, an editor has additional
-responsibilities, which we outline, below: 
-
-Editors look for:
-
-- **Style** -- "Typically we have an introduction before a section..."
-- **Consistency** -- "Perhaps we should use the same example throughout..."
-- **Clarity** -- "I think it would be easier to understand if..."
-- **Comprehensiveness** -- "What are we leaving out?"
-- **Coherency** -- "Is this supposed to be here?"
-- **Grammar** -- "Eats shoots and leaves vs Eats, shoots, and leaves"
-
-## Step 3: Identify Workshop Prefix
-
-All workshops are prefixed with a three letter code. The table, below, explains
-the codes used to categorize workshops. 
-
-<img src="public/assets/images/workshop-prefixes.png">
-
-
-## Step 4: Identify Workshop Code 
-
-All workshops also have a workshop code which helps categorize workshops in
-terms of difficulty. The following diagram details our workshop code system. 
-
-
-<img src="public/assets/images/workshop-code.png">
-
-
-## Step 5: Forking This Repository (Tailored Workshops Only)
-
-Not all workshops may be written for a general audience and must be specialized.
-To support this, in the `codeql-workshops` org you will fork the
-`codeql-learning-catalog` repo and create a custom private repository where you
-will author your private workshop. You will be responsible for ensuring the
-proper access rights are granted to workshop participants. 
-
-## Step 6: Open and Merge your PR
-
-Lastly, you must open your PR and merge it. You should ensure that you and your editor have
-previewed the finished site prior to merging. 
-
-
-# Authoring Features 
-
-This section covers some of the technical features that will be useful to
-workshop authors. 
-
-## Starting an Editing Environment 
-
-The workshop system has been designed to be easy to use for both authors and
-workshop participants. For authors, you have been provided with a specialized
-image that contains not only the CodeQL binaries but additional binaries and
-scripts for authoring. 
-
-The easiest way to get started is with codespaces. For authoring you will select
-the `.devcontainer/authors/devcontainer.json` image, which is shown pictured,
-below. At least 8 cores is recommended for a smooth authoring experience. 
-
-
-<img src="public/assets/images/codespaces.png">
-
-## Directory Structure 
-
-An important aspect of your workshop is its placement in the directory
-structure. In general, all workshops will live below the `docs` directory. From
-there, there are two types of structures: language independent workshops and
-language dependent workshops.
-
-### Language Independent Workshops
-
-Language *independent* workshops exist as a single variation of a workshop,
-unlike language *dependent* workshops, which require a dedicated workshop for a
-course. Language independent workshops follow the structure pictured, below:
-
+言語 *非依存* ワークショップは言語*依存*とは異なり、１種類のみのワークショップです。
 <img src="public/assets/images/language-independent-structure.png">
 
 
-### Language Dependent Workshops 
+### 言語依存のワークショップ 
 
-Language *dependent* workshops are workshops that are variations done on a *per
-language* basis. For example, in the diagram below, we show two copies of a
-workshop: one for `cpp` and one for `python`. 
-
+言語*依存*のワークショップは、言語ごとのワークショップになっております。例えば、`cpp`は１つのワークショップ、`python`は別ワークショップとなります。
 <img src="public/assets/images/language-dependent-structure.png">
 
-### Metadata and Generated Elements
+### index.mdファイルのメタデータ
 
-Within the `index.md` files of your workshop you will notice a metadata section.
-It is critical to fill this part of your workshop out so that it renders
-properly in the workshop system. The following diagram shows how various
-`index.md` files are rendered within the workshop system. 
+それぞれのワークショップのディレクトリには、`index.md`ファイルがあります。その中に以下のメタデータがあります。
+course_numberの見方は、<ワークショップタイトル>-<レベル>となっています。
+|ワークショップタイトル|説明 |
+|------------------|--- |
+|QLC|CodeQL Core|
+|LDF|Language Dependent Features|
+|TIP|Tooling,Infrastructure,and Practice|
+|EXP|Explorations|
 
-As a workshop author you are generally only responsible for the `index.md` file
-within your workshop's top level directory. However, if you are creating a new
-workshop for which the parent paths do not exist, you are also responsible for
-those markdown files as well. 
-
-The following code example shows you the fields that are available within your
-workshop for metadata tagging purposes. 
+|レベル|説明|
+|-----|---|
+|10x|基本レベル|
+|20x|中級レベル|
+|30x|アドバンスドレベル|
 
 ```
 ---
@@ -166,10 +74,6 @@ deck: url-to-your-deck
 octicon: package
 toc: false
 ---
-```
-
-<img src="public/assets/images/metadata.png">
-
 ## Previewing Your Work
 
 
