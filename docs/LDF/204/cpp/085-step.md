@@ -7,15 +7,15 @@ octicon: package
 toc: false
 ---
 
-## Interim notes
+## 補足ノート
 
-A common issue with the `SimpleRangeAnalysis` library is handling of cases where the bounds are undeterminable at compile-time on one or more paths. For example, even though certain paths have clearly defined bounds, the range analysis library will define the `upperBound` and `lowerBound` of `val` as `INT_MIN` and `INT_MAX` respectively:
+`SimpleRangeAnalysis`ライブラリを使った共通の問題は、コンパイル時には範囲は決定できないケースをハンドリングすることです。例えば、確実なパスが定義されている場合にでさえ、範囲の分析ライブラリ`INT_MIN`,`INT_MAX`として、`val`の`upperBound`と`lowerBound`を定義します。
 
 ```cpp
 int val = rand() ? rand() : 30;
 ```
 
-A similar case is present in the `test_const_branch` and `test_const_branch2` test-cases. In these cases, it is necessary to augment range analysis with data-flow and restrict the bounds to the upper or lower bound of computable constants that flow to a given expression. Another approach is global value numbering, used next.
+類似のケースは、`test_const_branch`と`test_const_branch2`にあります。これらのケースにおいて、データフローとともに、引数の範囲分析、式の中で利用される値の上限、下限を制限することは必要です。別のアプローチは、次に出てくるグローバル変数の番号付けです。
 
 
 

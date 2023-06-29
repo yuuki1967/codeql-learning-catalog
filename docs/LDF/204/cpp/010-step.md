@@ -7,14 +7,14 @@ octicon: package
 toc: false
 ---
 
-## Identify Syntactic Elements
+## 文節(Syntactic-宣言、式、命令など)要素の認識
 
-In the first step we are going to
+まず最初のステップ:
 
-1.  identify a dynamic allocation with `malloc` and
-2.  an access to that allocated buffer. The access is via an array expression; we are **not** going to cover pointer dereferencing.
+1.  動的メモリ確保の関数`malloc`の検出し、
+2.  確保されたバッファへのアクセスを検出。 本ワークショップでは、バッファへのアクセスは、配列へのアクセスのみを想定しています。ポインターを使った参照はカバーしていません。
 
-The goal of this exercise is to then output the array access, array size, buffer, and buffer offset.
+本ワークショップのゴールは、配列へのアクセス、配列、バッファのサイズ、バッファのオフセットを見つけることです。
 
 The focus here is on
 
@@ -24,25 +24,25 @@ and
 
     void test_const_var(void)
 
-in [db.c](file:///Users/hohn/local/codeql-workshop-runtime-values-c/session-db/DB/db.c).
+in [db.c](file:///session-db/DB/db.c).
 
 
 
 
-### Hints
+### ヒント
 
 1.  `Expr::getValue()::toInt()` can be used to get the integer value of a constant expression.
 
 
 
 
-### Solution
+### ソリューション
 ```ql file=./src/session/example1.ql
 ```
 
 
 
-### First 5 results
+### 結果 5 
 ```ql file=./tests/session/Example1/example1.expected#L1-L5
 
 
